@@ -32,6 +32,12 @@ To run `man`, your system needs:
 > [!TIP]
 > **Virtual Environment Recommended:** We highly recommend installing this in a Python Virtual Environment (`venv`) rather than your global system. Running the tool from within an active virtual environment is often faster!
 
+### Requirements
+- Windows OS (Command Prompt, PowerShell, or Git Bash)
+- Python 3.10+ installed and added to your PATH.
+  - *(Need Python but don't have Admin rights? Check out the [NoAdmin Python Installation Guide](https://github.com/irwints-ph/noadmin/blob/main/docs/tools/python-no-admin.md))*
+- Basic familiarity with opening a terminal.
+
 1. Open your terminal (Command Prompt, PowerShell, or Git Bash).
 2. Navigate to the folder where you downloaded this project:
    ```bash
