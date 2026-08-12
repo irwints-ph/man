@@ -64,13 +64,35 @@ def main():
             sys.exit(1)
             
         final_path = test_path.resolve().as_posix()
+        compressed = False
         
         # Try to compress the path by replacing known source directories with their {alias}
         for src_key, src_val in config.get("sources", {}).items():
             src_val_norm = Path(src_val).resolve().as_posix()
             if final_path.lower().startswith(src_val_norm.lower()):
                 final_path = f"{{{src_key}}}" + final_path[len(src_val_norm):]
+                compressed = True
                 break
+                
+        if not compressed:
+            # Auto-generate a new source based on the topic name
+            parent_dir = test_path.resolve().parent
+            source_alias = f"{topic_name}-docs"
+                
+            # Ensure the alias is unique
+            base_alias = source_alias
+            counter = 1
+            while source_alias in config.get("sources", {}):
+                source_alias = f"{base_alias}-{counter}"
+                counter += 1
+                
+            if "sources" not in config:
+                config["sources"] = {}
+            config["sources"][source_alias] = parent_dir.as_posix()
+            
+            # Compress using the newly generated source
+            final_path = f"{{{source_alias}}}/{test_path.name}"
+            print(f"Auto-created new source: '{source_alias}' -> {parent_dir.as_posix()}")
                 
         config["topics"][topic_name] = final_path
         with open(config_file, "w", encoding="utf-8") as f:
