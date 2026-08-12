@@ -63,10 +63,19 @@ def main():
             print(f"Error: The file '{test_path}' does not exist.")
             sys.exit(1)
             
-        config["topics"][topic_name] = str(test_path).replace("\\", "/")
+        final_path = test_path.resolve().as_posix()
+        
+        # Try to compress the path by replacing known source directories with their {alias}
+        for src_key, src_val in config.get("sources", {}).items():
+            src_val_norm = Path(src_val).resolve().as_posix()
+            if final_path.lower().startswith(src_val_norm.lower()):
+                final_path = f"{{{src_key}}}" + final_path[len(src_val_norm):]
+                break
+                
+        config["topics"][topic_name] = final_path
         with open(config_file, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=4)
-        print(f"Successfully added '{topic_name}' -> {test_path}")
+        print(f"Successfully added '{topic_name}' -> {final_path}")
         sys.exit(0)
             
     if args.delete:
