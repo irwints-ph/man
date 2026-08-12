@@ -34,7 +34,7 @@ To run `man`, your system needs:
 
 ### Requirements
 - Windows OS (Command Prompt, PowerShell, or Git Bash)
-- Python 3.10+ installed and added to your PATH.
+- Python 3.9+ installed and added to your PATH.
   - *(Need Python but don't have Admin rights? Check out the [NoAdmin Python Installation Guide](https://github.com/irwints-ph/noadmin/blob/main/docs/tools/python-no-admin.md))*
 - Basic familiarity with opening a terminal.
 
