@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [project.scripts]
-man = "man:main"
+man = "man.cli:main"
 
 [tool.setuptools]
-py-modules = ["man"]
+packages = ["man"]

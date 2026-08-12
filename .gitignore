@@ -49,3 +49,4 @@ venv.bak/
 .DS_Store
 
 man_config.json
+local_man_config.json

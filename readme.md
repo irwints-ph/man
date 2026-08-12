@@ -22,6 +22,9 @@ To run `man`, your system needs:
 
 *Note: You do not need to be a Python developer to use this tool!*
 
+> [!WARNING]
+> **Known Limitations:** Currently, `man` does not render Mermaid diagrams (`mermaid` code blocks). They will be displayed as raw text blocks in the terminal.
+
 ---
 
 ## 🚀 Installation
@@ -121,10 +124,10 @@ If `pip install -e .` doesn't work for you, or if you prefer manual configuratio
 
 ### Step 1: Create a Batch File
 1. Open Notepad.
-2. Paste the following two lines (adjust the path if you downloaded the folder somewhere else):
+2. Paste the following two lines:
    ```bat
    @echo off
-   python C:\Users\<yourusername>\Documents\_Codes\_Project\man\man.py %*
+   python -m man %*
    ```
 3. Save the file as `man.bat`. We recommend saving it right inside the `man` project folder so everything stays together.
 
