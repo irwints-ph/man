@@ -9,6 +9,7 @@ from .reader import render_document
 def main():
     parser = argparse.ArgumentParser(description="Manual/Documentation Reader")
     parser.add_argument("topic", nargs="?", help="The topic or command you want to read the manual for (e.g., pf, bv)")
+    parser.add_argument("-r", "--read", metavar="PATH", help="Read a specific Markdown file directly without adding it to configuration")
     parser.add_argument("-l", "--list", action="store_true", help="List all available topics")
     parser.add_argument("-i", "--init", action="store_true", help="Initialize a new blank configuration file if one does not exist")
     parser.add_argument("-a", "--add", "-e", "--edit", nargs=2, metavar=("TOPIC", "PATH"), dest="add", help="Add or edit a manual page mapping (Provide an absolute path)")
@@ -18,6 +19,19 @@ def main():
     
     if args.init:
         initialize_config()
+        sys.exit(0)
+
+    if args.read:
+        file_path = Path(args.read)
+        if not file_path.is_absolute():
+            file_path = Path(os.getcwd()) / args.read
+            
+        if not file_path.exists():
+            print(f"Error: The file '{file_path}' does not exist.")
+            sys.exit(1)
+            
+        topic_display_name = file_path.stem
+        render_document(file_path, topic_display_name)
         sys.exit(0)
     
     config = load_config()

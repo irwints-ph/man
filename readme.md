@@ -107,6 +107,13 @@ man coding
 
 ## ⚙️ Advanced Commands Reference
 
+### Read Any Markdown File Directly (`-r` / `--read`)
+You can read any Markdown file on your computer directly without saving it to your config:
+```bash
+man -r C:\Projects\my-notes\how-to-code.md
+man -r relative/path/to/README.md
+```
+
 If you forget what topics you have saved, you can list them all:
 ```bash
 man --list
