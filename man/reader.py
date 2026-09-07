@@ -19,6 +19,8 @@ def render_document(doc_path, topic):
         md_text = f.read()
 
     console = Console()
+    # this removes color
+    # console = Console(color_system=None)
     md = Markdown(md_text)
 
     # Possible locations of less.exe
@@ -44,11 +46,13 @@ def render_document(doc_path, topic):
 
             # Tell Rich which pager to use
             os.environ["PAGER"] = f"{short_less_path} -R"
+            # os.environ["PAGER"] = f'"{less_path}" -R'
+            # os.environ["PAGER"] = f"{short_less_path} -F -X"
 
             break
 
     # Display the document using Rich's pager
-    with console.pager(styles=True):
+    with console.pager(styles=True):  # from True
         console.print(
             f"\n--- Reading: {doc_path} ---\n",
             style="bold blue"
