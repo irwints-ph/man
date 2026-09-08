@@ -2,12 +2,12 @@ import os
 import sys
 
 
-def render_document(doc_path, topic):
+def render_document(doc_path, topic, align_center=False):
     print(f"Preparing manual for '{topic}', please wait...")
 
     try:
         from rich.console import Console
-        from rich.markdown import Markdown
+        from rich.markdown import Markdown, Heading
     except ImportError:
         print(
             "Error: The 'rich' library is required for advanced rendering. "
@@ -17,6 +17,16 @@ def render_document(doc_path, topic):
 
     with open(doc_path, "r", encoding="utf-8") as f:
         md_text = f.read()
+
+    # Configure heading alignment (default is left-aligned; center if align_center is True)
+    Heading.LEVEL_ALIGN = {
+        "h1": "center" if align_center else "left",
+        "h2": "center" if align_center else "left",
+        "h3": "center" if align_center else "left",
+        "h4": "left",
+        "h5": "left",
+        "h6": "left",
+    }
 
     console = Console()
     # this removes color
