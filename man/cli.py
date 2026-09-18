@@ -53,6 +53,7 @@ def main():
     parser.add_argument("-i", "--init", action="store_true", help="Initialize a new blank configuration file if one does not exist")
     parser.add_argument("-a", "--add", "-e", "--edit", nargs=2, metavar=("TOPIC", "PATH"), dest="add", help="Add or edit a manual page mapping (Provide an absolute path)")
     parser.add_argument("-d", "--delete", metavar="TOPIC", help="Delete a manual page mapping from the configuration")
+    parser.add_argument("-ac", "--align-center", action="store_true", help="Align markdown headers to the center (default is left-aligned)")
     
     args = parser.parse_args()
     
@@ -74,7 +75,7 @@ def main():
             sys.exit(0)
 
         topic_display_name = file_path.stem
-        render_document(file_path, topic_display_name)
+        render_document(file_path, topic_display_name, align_center=args.align_center)
         sys.exit(0)
     
     config = load_config()
