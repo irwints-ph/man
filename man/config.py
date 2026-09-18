@@ -62,6 +62,25 @@ def resolve_path(raw_path, sources, root_dir):
         
     return doc_path
 
+def resolve_source_and_file(raw_path, sources, root_dir):
+    """
+    Resolves the source root directory, relative document path, and full file path.
+    For example: '{bv-docs}/04-text-configuration-guide.md'
+    -> (source_dir: Path('D:/_codes/video-engine/_docs/03-guides'),
+        rel_file: '04-text-configuration-guide.md',
+        full_path: Path('D:/_codes/video-engine/_docs/03-guides/04-text-configuration-guide.md'))
+    """
+    for key, value in sources.items():
+        placeholder = f"{{{key}}}"
+        if placeholder in raw_path:
+            source_dir = Path(value).resolve()
+            rel_file = raw_path.replace(placeholder, "").lstrip("/\\")
+            full_path = (source_dir / rel_file).resolve()
+            return source_dir, rel_file, full_path
+
+    doc_path = resolve_path(raw_path, sources, root_dir).resolve()
+    return doc_path.parent, doc_path.name, doc_path
+
 def add_topic(config, topic_name, test_path):
     final_path = test_path.resolve().as_posix()
     compressed = False

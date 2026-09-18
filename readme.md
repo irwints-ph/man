@@ -19,11 +19,12 @@ If you maintain multiple code repositories, scripts, or personal knowledge bases
 To run `man`, your system needs:
 1. **Python 3.9+** installed on your system.
 2. (Optional but Recommended) **Git for Windows (Git Bash)** - If installed, `man` will automatically detect and use the `less` pager, allowing you to scroll through long documents smoothly using your arrow keys or mouse wheel.
+3. (Optional for Browser Preview) **`mdp`** (`D:\sw\batch\mdp.cmd`) - If installed / in PATH, enables rich browser preview (`man <topic> -b`) with interactive Mermaid diagrams, Lightbox zoom, and outline.
 
 *Note: You do not need to be a Python developer to use this tool!*
 
 > [!WARNING]
-> **Known Limitations:** Currently, `man` does not render Mermaid diagrams (`mermaid` code blocks). They will be displayed as raw text blocks in the terminal.
+> **Terminal Rendering:** In terminal mode, `man` displays Mermaid diagrams (`mermaid` code blocks) as raw code blocks. To view them fully rendered into interactive vector graphics with zoom and pan, use the browser mode flag: `man <topic> -b` (powered by `D:\sw\batch\mdp.cmd`).
 
 ---
 
@@ -113,6 +114,21 @@ You can read any Markdown file on your computer directly without saving it to yo
 man -r C:\Projects\my-notes\how-to-code.md
 man -r relative/path/to/README.md
 ```
+
+### Web Browser Preview with `mdp` (`-b` / `--browser`)
+To view your documentation in a rich browser interface with full Mermaid diagrams, interactive Lightbox pan/zoom, dynamic Table of Contents outline, and folder tree powered by `D:\sw\batch\mdp.cmd`:
+```bash
+man bvt -b           # Opens in default browser via mdp
+man bvt -b c         # Opens in Google Chrome
+man bvt -b edge      # Opens in Microsoft Edge
+man -r notes.md -b   # Opens any local file directly in mdp browser
+```
+When `-b` is passed, `man` resolves the topic's source folder from `man_config.json` (e.g. `{bv-docs}`), sets that as the root workspace in `D:\sw\batch\mdp.cmd`, and immediately opens the target document in your browser.
+
+> [!NOTE]
+> The browser mode uses `D:\sw\batch\mdp.cmd`. Ensure `D:\sw\batch` is in your environment `PATH` (or that `mdp.cmd` is in your batch directory).
+
+
 
 If you forget what topics you have saved, you can list them all:
 ```bash
