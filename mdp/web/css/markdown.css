@@ -1,0 +1,97 @@
+/* Markdown Styling Refinements with dynamic zoom */
+    .markdown-body {
+      max-width: calc(960px * var(--doc-zoom, 1));
+      margin: 0 auto;
+      color: var(--text-primary);
+      background-color: transparent !important;
+      line-height: 1.65;
+      font-size: calc(16px * var(--doc-zoom, 1));
+    }
+
+    [data-theme="dark"] .markdown-body {
+      color-scheme: dark;
+    }
+
+    /* GitHub Alert Callouts */
+    .markdown-alert {
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+      border-left: 0.25rem solid;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .markdown-alert-note {
+      background: #f0f7ff;
+      border-color: #0969da;
+      color: #0969da;
+    }
+
+    [data-theme="dark"] .markdown-alert-note {
+      background: rgba(56, 139, 253, 0.15);
+      border-color: #388bfd;
+      color: #58a6ff;
+    }
+
+    .markdown-alert-tip {
+      background: #f0fdf4;
+      border-color: #1a7f37;
+      color: #1a7f37;
+    }
+
+    [data-theme="dark"] .markdown-alert-tip {
+      background: rgba(46, 160, 67, 0.15);
+      border-color: #3fb950;
+      color: #3fb950;
+    }
+
+    .markdown-alert-important {
+      background: #fbf5ff;
+      border-color: #8250df;
+      color: #8250df;
+    }
+
+    [data-theme="dark"] .markdown-alert-important {
+      background: rgba(163, 113, 247, 0.15);
+      border-color: #a371f7;
+      color: #bc8cff;
+    }
+
+    .markdown-alert-warning {
+      background: #fff8c5;
+      border-color: #9a6700;
+      color: #9a6700;
+    }
+
+    [data-theme="dark"] .markdown-alert-warning {
+      background: rgba(187, 128, 9, 0.15);
+      border-color: #bb8009;
+      color: #d29922;
+    }
+
+    .markdown-alert-caution {
+      background: #ffebe9;
+      border-color: #cf222e;
+      color: #cf222e;
+    }
+
+    [data-theme="dark"] .markdown-alert-caution {
+      background: rgba(248, 81, 73, 0.15);
+      border-color: #f85149;
+      color: #ff7b72;
+    }
+
+    .markdown-alert-title {
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-bottom: 0.3rem;
+      text-transform: capitalize;
+    }
+
+    .markdown-alert p {
+      color: var(--text-primary);
+      margin: 0;
+    }

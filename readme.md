@@ -116,17 +116,22 @@ man -r relative/path/to/README.md
 ```
 
 ### Web Browser Preview with `mdp` (`-b` / `--browser`)
-To view your documentation in a rich browser interface with full Mermaid diagrams, interactive Lightbox pan/zoom, dynamic Table of Contents outline, and folder tree powered by `D:\sw\batch\mdp.cmd`:
+To view your documentation in a rich browser interface with full Mermaid diagrams, interactive Lightbox pan/zoom, dynamic Table of Contents outline, and folder tree powered by `mdp`:
 ```bash
 man bvt -b           # Opens in default browser via mdp
 man bvt -b c         # Opens in Google Chrome
 man bvt -b edge      # Opens in Microsoft Edge
 man -r notes.md -b   # Opens any local file directly in mdp browser
+
+# Run mdp directly standalone:
+mdp                  # Scans current directory
+mdp -d "path/to/dir" # Explicit start directory
+mdp -d "path/to/dir" -f README.md
 ```
-When `-b` is passed, `man` resolves the topic's source folder from `man_config.json` (e.g. `{bv-docs}`), sets that as the root workspace in `D:\sw\batch\mdp.cmd`, and immediately opens the target document in your browser.
+`mdp` (Markdown Preview Pane) is included directly inside this repository under `mdp/`. When you install `man` with `pip install -e .`, both `man` and `mdp` CLI commands (`man.exe` and `mdp.exe`) are installed together.
 
 > [!NOTE]
-> The browser mode uses `D:\sw\batch\mdp.cmd`. Ensure `D:\sw\batch` is in your environment `PATH` (or that `mdp.cmd` is in your batch directory).
+> `D:\sw\batch\mdp.cmd` is also configured to delegate to `D:\_codes\man\mdp\main.py`, ensuring `mdp` works in any terminal session regardless of virtual environment activation.
 
 
 

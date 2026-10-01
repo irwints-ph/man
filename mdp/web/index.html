@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown Preview Pane</title>
+  <!-- CDN styles & libraries with offline fallbacks -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark" disabled crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <style>
+    /* __INJECT_CSS__ */
+  </style>
+</head>
+<body>
+  <!-- Top Navigation Bar -->
+  <header class="app-header">
+    <div class="app-brand">
+      <button id="btn-toggle-sidebar" class="btn" title="Toggle File Tree">📁 Explorer</button>
+      <span>Markdown Preview Pane</span>
+      <span class="badge" id="root-dir-badge">_docs</span>
+    </div>
+    <div class="header-actions">
+      <button id="btn-toc" class="btn" title="Table of Contents">📑 Outline</button>
+      <button id="btn-theme" class="btn" title="Toggle Theme">🌓 Theme</button>
+    </div>
+  </header>
+
+  <!-- 2-Pane Split Container -->
+  <div class="app-body">
+    <!-- Left Pane: Hierarchical File Directory Explorer -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <input type="text" id="search-input" class="search-box" placeholder="Filter files (Ctrl+K)..." autocomplete="off" />
+        <div class="sidebar-controls">
+          <span id="file-count">Loading...</span>
+          <div class="sidebar-tool-links">
+            <span class="sidebar-tool-link" onclick="expandAllFolders(true)" title="Expand all folders">Expand</span>
+            <span>|</span>
+            <span class="sidebar-tool-link" onclick="expandAllFolders(false)" title="Collapse all folders">Collapse</span>
+            <span>|</span>
+            <span class="sidebar-tool-link" onclick="loadFiles()" title="Reload from disk">↻</span>
+          </div>
+        </div>
+      </div>
+      <div class="explorer-tree" id="explorer-tree"></div>
+    </aside>
+
+    <!-- Right Pane: Markdown Content Viewer -->
+    <main class="preview-pane">
+      <div class="preview-toolbar">
+        <span class="preview-path" id="preview-path">Select a markdown file to preview</span>
+        <div style="display:flex; gap:0.5rem; align-items:center;">
+          <!-- Markdown Document Font Size Zoom Controls -->
+          <div class="zoom-toolbar-group" title="Document Font Size Zoom (Ctrl + Plus / Minus)">
+            <button type="button" class="btn-icon" onclick="adjustDocZoom(-0.1)" title="Smaller text (Ctrl + -)">A−</button>
+            <span id="doc-zoom-label" class="zoom-badge" onclick="resetDocZoom()" title="Click to reset font size (100%)">100%</span>
+            <button type="button" class="btn-icon" onclick="adjustDocZoom(0.1)" title="Larger text (Ctrl + +)">A+</button>
+          </div>
+          <button id="btn-copy" class="btn" title="Copy raw Markdown" style="display:none;" onclick="copyRawContent()">📋 Copy</button>
+        </div>
+      </div>
+      <div class="preview-content" id="scroll-container">
+        <article class="markdown-body" id="markdown-viewer">
+          <div style="text-align:center; padding: 4rem 1rem; color:var(--text-secondary);">
+            <h2>📖 Markdown Preview Pane</h2>
+            <p style="margin-top:0.5rem;">Select any Markdown file from the left Explorer to view its formatted output.</p>
+          </div>
+        </article>
+      </div>
+    </main>
+  </div>
+
+  <!-- Floating Table of Contents Drawer -->
+  <div class="toc-drawer" id="toc-drawer">
+    <div class="toc-title">Document Outline</div>
+    <ul class="toc-list" id="toc-list"></ul>
+  </div>
+
+  <!-- Lightbox Modal for Enlarge (Mermaid Diagrams & Images) -->
+  <div class="lightbox-modal" id="lightbox-modal">
+    <div class="lightbox-header">
+      <div class="lightbox-title">
+        <span id="lb-title-text">🔍 Diagram Inspector</span>
+        <span style="font-size:0.75rem; opacity:0.75;">(Scroll wheel to zoom, click & drag to pan)</span>
+      </div>
+      <div class="lightbox-tools">
+        <button class="lightbox-btn" onclick="zoomLightbox(1.25)" title="Zoom In (+)">🔍+ In</button>
+        <button class="lightbox-btn" onclick="zoomLightbox(0.8)" title="Zoom Out (-)">🔍− Out</button>
+        <span id="lb-zoom-badge" class="lightbox-zoom-badge">100%</span>
+        <button class="lightbox-btn" onclick="fitLightbox()" title="Fit entire diagram to screen">⛶ Fit Screen</button>
+        <button class="lightbox-btn" onclick="resetLightboxZoom()" title="Actual 1:1 Size (100% Crisp Font)">1:1 Actual Size</button>
+        <button class="lightbox-btn" onclick="downloadLightboxSvg()" title="Download SVG">⬇ Save SVG</button>
+        <button class="lightbox-btn" onclick="closeLightbox()" title="Close (Esc)">✕ Close</button>
+      </div>
+    </div>
+    <div class="lightbox-body" id="lightbox-body">
+      <div class="lightbox-stage" id="lightbox-stage"></div>
+    </div>
+  </div>
+  <script>
+    /* __INJECT_JS__ */
+  </script>
+</body>
+</html>

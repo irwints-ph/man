@@ -1,0 +1,96 @@
+/* Lightbox Modal for Enlarge (Diagrams & Images) */
+    .lightbox-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--lightbox-bg);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      animation: lightboxFade 0.15s ease-out;
+    }
+
+    .lightbox-modal.open {
+      display: flex;
+    }
+
+    .lightbox-header {
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      background: rgba(0, 0, 0, 0.4);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      flex-shrink: 0;
+    }
+
+    .lightbox-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .lightbox-tools {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .lightbox-btn {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: background 0.12s ease;
+    }
+
+    .lightbox-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Clean, unconstrained canvas card for sharp vector rendering */
+    .lightbox-card {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+      border: 1px solid var(--border-color);
+      display: inline-block;
+      pointer-events: auto;
+    }
+
+    .lightbox-card svg {
+      display: block;
+      shape-rendering: geometricPrecision;
+      text-rendering: geometricPrecision;
+    }
+
+    .lightbox-card svg text {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif !important;
+      font-weight: 500;
+      text-rendering: optimizeLegibility !important;
+    }
+
+    .lightbox-card img {
+      display: block;
+      max-width: none !important;
+      max-height: none !important;
+      user-select: none;
+      -webkit-user-drag: none;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      border-radius: 4px;
+    }

@@ -1,0 +1,537 @@
+/* Mermaid Diagram Block Styling */
+    .mermaid-wrapper {
+      margin: 1.5rem 0;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--bg-secondary);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      position: relative;
+    }
+
+    .mermaid-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.45rem 0.85rem;
+      background: var(--bg-sidebar);
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.775rem;
+      color: var(--text-secondary);
+    }
+
+    .mermaid-hint {
+      font-size: 0.72rem;
+      color: var(--accent);
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .mermaid-viewport {
+      padding: 1.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: auto;
+      cursor: zoom-in;
+    }
+
+    .mermaid-viewport svg {
+      max-width: 100%;
+      height: auto;
+      min-width: min(100%, 550px);
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.05));
+    }
+
+    /* High-contrast node styling for Mermaid diagrams (Light Mode) */
+    .mermaid-viewport svg .node:not(.cluster) rect,
+    .mermaid-viewport svg .node:not(.cluster) polygon,
+    .mermaid-viewport svg .node:not(.cluster) circle,
+    .mermaid-viewport svg .node:not(.cluster) ellipse,
+    .mermaid-viewport svg .node:not(.cluster) path,
+    .lightbox-card svg .node:not(.cluster) rect,
+    .lightbox-card svg .node:not(.cluster) polygon,
+    .lightbox-card svg .node:not(.cluster) circle,
+    .lightbox-card svg .node:not(.cluster) ellipse,
+    .lightbox-card svg .node:not(.cluster) path {
+      fill: #eef2ff !important;
+      stroke: #4338ca !important;
+      stroke-width: 1.8px !important;
+    }
+
+    /* High-contrast node styling for Mermaid diagrams (Dark Mode) */
+    [data-theme="dark"] .mermaid-viewport svg .node:not(.cluster) rect,
+    [data-theme="dark"] .mermaid-viewport svg .node:not(.cluster) polygon,
+    [data-theme="dark"] .mermaid-viewport svg .node:not(.cluster) circle,
+    [data-theme="dark"] .mermaid-viewport svg .node:not(.cluster) ellipse,
+    [data-theme="dark"] .mermaid-viewport svg .node:not(.cluster) path,
+    [data-theme="dark"] .lightbox-card svg .node:not(.cluster) rect,
+    [data-theme="dark"] .lightbox-card svg .node:not(.cluster) polygon,
+    [data-theme="dark"] .lightbox-card svg .node:not(.cluster) circle,
+    [data-theme="dark"] .lightbox-card svg .node:not(.cluster) ellipse,
+    [data-theme="dark"] .lightbox-card svg .node:not(.cluster) path {
+      fill: #1e293b !important;
+      stroke: #60a5fa !important;
+      stroke-width: 1.8px !important;
+    }
+
+    /* Sequence Diagram Actors (Boxes & Stick Figures) */
+    .mermaid-viewport svg g.actor rect,
+    .mermaid-viewport svg rect.actor,
+    .lightbox-card svg g.actor rect,
+    .lightbox-card svg rect.actor {
+      fill: #f0f7ff !important;
+      stroke: #2563eb !important;
+      stroke-width: 1.5px !important;
+      rx: 4px;
+      ry: 4px;
+    }
+
+    .mermaid-viewport svg g.actor circle,
+    .mermaid-viewport svg circle.actor,
+    .lightbox-card svg g.actor circle,
+    .lightbox-card svg circle.actor {
+      fill: #f0f7ff !important;
+      stroke: #2563eb !important;
+      stroke-width: 2px !important;
+    }
+
+    .mermaid-viewport svg g.actor line,
+    .mermaid-viewport svg line.actor,
+    .mermaid-viewport svg g.actor path,
+    .mermaid-viewport svg path.actor,
+    .lightbox-card svg g.actor line,
+    .lightbox-card svg line.actor,
+    .lightbox-card svg g.actor path,
+    .lightbox-card svg path.actor {
+      stroke: #2563eb !important;
+      stroke-width: 2px !important;
+      fill: none !important;
+    }
+
+    [data-theme="dark"] .mermaid-viewport svg g.actor rect,
+    [data-theme="dark"] .mermaid-viewport svg rect.actor,
+    [data-theme="dark"] .lightbox-card svg g.actor rect,
+    [data-theme="dark"] .lightbox-card svg rect.actor {
+      fill: #1e293b !important;
+      stroke: #60a5fa !important;
+      stroke-width: 1.5px !important;
+      rx: 4px;
+      ry: 4px;
+    }
+
+    [data-theme="dark"] .mermaid-viewport svg g.actor circle,
+    [data-theme="dark"] .mermaid-viewport svg circle.actor,
+    [data-theme="dark"] .lightbox-card svg g.actor circle,
+    [data-theme="dark"] .lightbox-card svg circle.actor {
+      fill: #1e293b !important;
+      stroke: #60a5fa !important;
+      stroke-width: 2px !important;
+    }
+
+    [data-theme="dark"] .mermaid-viewport svg g.actor line,
+    [data-theme="dark"] .mermaid-viewport svg line.actor,
+    [data-theme="dark"] .mermaid-viewport svg g.actor path,
+    [data-theme="dark"] .mermaid-viewport svg path.actor,
+    [data-theme="dark"] .lightbox-card svg g.actor line,
+    [data-theme="dark"] .lightbox-card svg line.actor,
+    [data-theme="dark"] .lightbox-card svg g.actor path,
+    [data-theme="dark"] .lightbox-card svg path.actor {
+      stroke: #60a5fa !important;
+      stroke-width: 2px !important;
+      fill: none !important;
+    }
+
+    /* Sequence Diagram Lifelines (Vertical Connectors) */
+    .mermaid-viewport svg .actor-line,
+    .mermaid-viewport svg line.actor-line,
+    .mermaid-viewport svg path.actor-line,
+    .mermaid-viewport svg line[class*="actor-line"],
+    .lightbox-card svg .actor-line,
+    .lightbox-card svg line.actor-line,
+    .lightbox-card svg path.actor-line,
+    .lightbox-card svg line[class*="actor-line"] {
+      stroke: #64748b !important;
+      stroke-dasharray: 4 4 !important;
+      stroke-width: 1.6px !important;
+      stroke-opacity: 1 !important;
+      visibility: visible !important;
+      display: block !important;
+    }
+
+    [data-theme="dark"] .mermaid-viewport svg .actor-line,
+    [data-theme="dark"] .mermaid-viewport svg line.actor-line,
+    [data-theme="dark"] .mermaid-viewport svg path.actor-line,
+    [data-theme="dark"] .mermaid-viewport svg line[class*="actor-line"],
+    [data-theme="dark"] .lightbox-card svg .actor-line,
+    [data-theme="dark"] .lightbox-card svg line.actor-line,
+    [data-theme="dark"] .lightbox-card svg path.actor-line,
+    [data-theme="dark"] .lightbox-card svg line[class*="actor-line"] {
+      stroke: #94a3b8 !important;
+      stroke-dasharray: 4 4 !important;
+      stroke-width: 1.6px !important;
+      stroke-opacity: 1 !important;
+      visibility: visible !important;
+      display: block !important;
+    }
+
+    /* Sequence Diagram Autonumber Badges (Step Numbers 1, 2, 3...) */
+    .mermaid-viewport svg circle.sequenceNumber,
+    .mermaid-viewport svg .sequenceNumber circle,
+    .mermaid-viewport svg marker#sequencenumber circle,
+    .lightbox-card svg circle.sequenceNumber,
+    .lightbox-card svg .sequenceNumber circle,
+    .lightbox-card svg marker#sequencenumber circle {
+      fill: #2563eb !important;
+      stroke: #1d4ed8 !important;
+      stroke-width: 1.5px !important;
+    }
+
+    .mermaid-viewport svg text.sequenceNumber,
+    .mermaid-viewport svg .sequenceNumber text,
+    .mermaid-viewport svg marker#sequencenumber text,
+    .lightbox-card svg text.sequenceNumber,
+    .lightbox-card svg .sequenceNumber text,
+    .lightbox-card svg marker#sequencenumber text {
+      fill: #ffffff !important;
+      color: #ffffff !important;
+      font-size: 11px !important;
+      font-weight: 700 !important;
+      text-anchor: middle !important;
+      dominant-baseline: central !important;
+    }
+
+    /* Sequence Diagram Notes */
+    .mermaid-viewport svg rect.note,
+    .mermaid-viewport svg path.note,
+    .lightbox-card svg rect.note,
+    .lightbox-card svg path.note {
+      fill: #fef9c3 !important;
+      stroke: #eab308 !important;
+      stroke-width: 1.5px !important;
+      rx: 4px;
+      ry: 4px;
+    }
+
+    [data-theme="dark"] .mermaid-viewport svg rect.note,
+    [data-theme="dark"] .mermaid-viewport svg path.note,
+    [data-theme="dark"] .lightbox-card svg rect.note,
+    [data-theme="dark"] .lightbox-card svg path.note {
+      fill: #422006 !important;
+      stroke: #f59e0b !important;
+      stroke-width: 1.5px !important;
+      rx: 4px;
+      ry: 4px;
+    }
+
+    .mermaid-viewport svg text.noteText,
+    .lightbox-card svg text.noteText {
+      color: #78350f !important;
+      fill: #78350f !important;
+      font-weight: 600 !important;
+      font-size: 13px !important;
+    }
+
+    [data-theme="dark"] .mermaid-viewport svg text.noteText,
+    [data-theme="dark"] .lightbox-card svg text.noteText {
+      color: #fde047 !important;
+      fill: #fde047 !important;
+      font-weight: 600 !important;
+      font-size: 13px !important;
+    }
+
+    /* Sequence Diagram Loop Dividers and Borders (alt / else / opt / loop) */
+    .mermaid-viewport svg .loopLine,
+    .mermaid-viewport svg line.loopLine,
+    .mermaid-viewport svg path.loopLine,
+    .mermaid-viewport svg line[class*="loopLine"],
+    .lightbox-card svg .loopLine,
+    .lightbox-card svg line.loopLine,
+    .lightbox-card svg path.loopLine,
+    .lightbox-card svg line[class*="loopLine"] {
+      stroke: #64748b !important;
+      stroke-dasharray: 4 4 !important;
+      stroke-width: 1.5px !important;
+      stroke-opacity: 1 !important;
+      visibility: visible !important;
+    }
+
+    [data-theme="dark"] .mermaid-viewport svg .loopLine,
+    [data-theme="dark"] .mermaid-viewport svg line.loopLine,
+    [data-theme="dark"] .mermaid-viewport svg path.loopLine,
+    [data-theme="dark"] .mermaid-viewport svg line[class*="loopLine"],
+    [data-theme="dark"] .lightbox-card svg .loopLine,
+    [data-theme="dark"] .lightbox-card svg line.loopLine,
+    [data-theme="dark"] .lightbox-card svg path.loopLine,
+    [data-theme="dark"] .lightbox-card svg line[class*="loopLine"] {
+      stroke: #94a3b8 !important;
+      stroke-dasharray: 4 4 !important;
+      stroke-width: 1.5px !important;
+      stroke-opacity: 1 !important;
+      visibility: visible !important;
+    }
+
+    /* Sequence Diagram Loop/Alt Label Badges */
+    .mermaid-viewport svg .labelBox,
+    .mermaid-viewport svg polygon.labelBox,
+    .mermaid-viewport svg rect.labelBox,
+    .mermaid-viewport svg path.labelBox,
+    .lightbox-card svg .labelBox,
+    .lightbox-card svg polygon.labelBox,
+    .lightbox-card svg rect.labelBox,
+    .lightbox-card svg path.labelBox {
+      fill: #e2e8f0 !important;
+      stroke: #64748b !important;
+      stroke-width: 1.2px !important;
+    }
+
+    [data-theme="dark"] .mermaid-viewport svg .labelBox,
+    [data-theme="dark"] .mermaid-viewport svg polygon.labelBox,
+    [data-theme="dark"] .mermaid-viewport svg rect.labelBox,
+    [data-theme="dark"] .mermaid-viewport svg path.labelBox,
+    [data-theme="dark"] .lightbox-card svg .labelBox,
+    [data-theme="dark"] .lightbox-card svg polygon.labelBox,
+    [data-theme="dark"] .lightbox-card svg rect.labelBox,
+    [data-theme="dark"] .lightbox-card svg path.labelBox {
+      fill: #334155 !important;
+      stroke: #94a3b8 !important;
+      stroke-width: 1.2px !important;
+    }
+
+    .mermaid-viewport svg .labelText,
+    .mermaid-viewport svg text.labelText,
+    .lightbox-card svg .labelText,
+    .lightbox-card svg text.labelText {
+      fill: #0f172a !important;
+      color: #0f172a !important;
+      font-size: 11.5px !important;
+      font-weight: 700 !important;
+    }
+
+    [data-theme="dark"] .mermaid-viewport svg .labelText,
+    [data-theme="dark"] .mermaid-viewport svg text.labelText,
+    [data-theme="dark"] .lightbox-card svg .labelText,
+    [data-theme="dark"] .lightbox-card svg text.labelText {
+      fill: #f8fafc !important;
+      color: #f8fafc !important;
+      font-size: 11.5px !important;
+      font-weight: 700 !important;
+    }
+
+    .mermaid-viewport svg .loopText,
+    .mermaid-viewport svg text.loopText,
+    .lightbox-card svg .loopText,
+    .lightbox-card svg text.loopText {
+      fill: #1e40af !important;
+      color: #1e40af !important;
+      font-weight: 600 !important;
+      font-size: 12px !important;
+    }
+
+    [data-theme="dark"] .mermaid-viewport svg .loopText,
+    [data-theme="dark"] .mermaid-viewport svg text.loopText,
+    [data-theme="dark"] .lightbox-card svg .loopText,
+    [data-theme="dark"] .lightbox-card svg text.loopText {
+      fill: #93c5fd !important;
+      color: #93c5fd !important;
+      font-weight: 600 !important;
+      font-size: 12px !important;
+    }
+
+    /* Sequence Diagram Grouping Rectangles (rect rgb(...)) */
+    .mermaid-viewport svg rect.rect,
+    .lightbox-card svg rect.rect {
+      stroke: #94a3b8 !important;
+      stroke-width: 1.5px !important;
+      stroke-dasharray: 4 4 !important;
+      rx: 6px;
+      ry: 6px;
+    }
+
+    [data-theme="dark"] .mermaid-viewport svg rect.rect,
+    [data-theme="dark"] .lightbox-card svg rect.rect {
+      fill-opacity: 0.25 !important;
+      stroke: #64748b !important;
+      stroke-width: 1.5px !important;
+      stroke-dasharray: 4 4 !important;
+      rx: 6px;
+      ry: 6px;
+    }
+
+    /* Flowchart Subgraph Clusters */
+    .mermaid-viewport svg .cluster rect,
+    .lightbox-card svg .cluster rect {
+      fill: #f8fafc !important;
+      stroke: #94a3b8 !important;
+      stroke-width: 1.5px !important;
+      stroke-dasharray: 5 5 !important;
+      rx: 8px !important;
+    }
+
+    [data-theme="dark"] .mermaid-viewport svg .cluster rect,
+    [data-theme="dark"] .lightbox-card svg .cluster rect {
+      fill: rgba(30, 41, 59, 0.45) !important;
+      stroke: #475569 !important;
+      stroke-width: 1.5px !important;
+      stroke-dasharray: 5 5 !important;
+      rx: 8px !important;
+    }
+
+    .mermaid-viewport svg .cluster text,
+    .mermaid-viewport svg .cluster span,
+    .mermaid-viewport svg .cluster-label,
+    .lightbox-card svg .cluster text,
+    .lightbox-card svg .cluster span,
+    .lightbox-card svg .cluster-label {
+      fill: #1e293b !important;
+      color: #1e293b !important;
+      font-weight: 700 !important;
+      font-size: 13.5px !important;
+    }
+
+    [data-theme="dark"] .mermaid-viewport svg .cluster text,
+    [data-theme="dark"] .mermaid-viewport svg .cluster span,
+    [data-theme="dark"] .mermaid-viewport svg .cluster-label,
+    [data-theme="dark"] .lightbox-card svg .cluster text,
+    [data-theme="dark"] .lightbox-card svg .cluster span,
+    [data-theme="dark"] .lightbox-card svg .cluster-label {
+      fill: #93c5fd !important;
+      color: #93c5fd !important;
+      font-weight: 700 !important;
+      font-size: 13.5px !important;
+    }
+
+    /* Flowchart Edge Labels */
+    .mermaid-viewport svg .edgeLabel,
+    .mermaid-viewport svg .edgeLabel span,
+    .mermaid-viewport svg .edgeLabel p,
+    .lightbox-card svg .edgeLabel,
+    .lightbox-card svg .edgeLabel span,
+    .lightbox-card svg .edgeLabel p {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+      fill: #0f172a !important;
+      font-weight: 600 !important;
+      font-size: 12px !important;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    [data-theme="dark"] .mermaid-viewport svg .edgeLabel,
+    [data-theme="dark"] .mermaid-viewport svg .edgeLabel span,
+    [data-theme="dark"] .mermaid-viewport svg .edgeLabel p,
+    [data-theme="dark"] .lightbox-card svg .edgeLabel,
+    [data-theme="dark"] .lightbox-card svg .edgeLabel span,
+    [data-theme="dark"] .lightbox-card svg .edgeLabel p {
+      background-color: #0f172a !important;
+      color: #f1f5f9 !important;
+      fill: #f1f5f9 !important;
+      font-weight: 600 !important;
+      font-size: 12px !important;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* Readable text inside Mermaid diagram elements (Light Mode) */
+    .mermaid-viewport svg .node .label,
+    .mermaid-viewport svg .node .nodeLabel,
+    .mermaid-viewport svg .node span,
+    .mermaid-viewport svg g.actor text,
+    .mermaid-viewport svg text.actor,
+    .mermaid-viewport svg text.messageText,
+    .lightbox-card svg .node .label,
+    .lightbox-card svg .node .nodeLabel,
+    .lightbox-card svg .node span,
+    .lightbox-card svg g.actor text,
+    .lightbox-card svg text.actor,
+    .lightbox-card svg text.messageText {
+      color: #0f172a !important;
+      fill: #0f172a !important;
+      font-weight: 600 !important;
+      font-size: 13.5px !important;
+    }
+
+    /* Readable text inside Mermaid diagram elements (Dark Mode) */
+    [data-theme="dark"] .mermaid-viewport svg .node .label,
+    [data-theme="dark"] .mermaid-viewport svg .node .nodeLabel,
+    [data-theme="dark"] .mermaid-viewport svg .node span,
+    [data-theme="dark"] .mermaid-viewport svg g.actor text,
+    [data-theme="dark"] .mermaid-viewport svg text.actor,
+    [data-theme="dark"] .mermaid-viewport svg text.messageText,
+    [data-theme="dark"] .lightbox-card svg .node .label,
+    [data-theme="dark"] .lightbox-card svg .node .nodeLabel,
+    [data-theme="dark"] .lightbox-card svg .node span,
+    [data-theme="dark"] .lightbox-card svg g.actor text,
+    [data-theme="dark"] .lightbox-card svg text.actor,
+    [data-theme="dark"] .lightbox-card svg text.messageText {
+      color: #f8fafc !important;
+      fill: #f8fafc !important;
+      font-weight: 600 !important;
+      font-size: 13.5px !important;
+    }
+
+    /* Sharp connecting edges and flow lines */
+    .mermaid-viewport svg .flowchart-link,
+    .mermaid-viewport svg .edgePath path,
+    .mermaid-viewport svg path.path,
+    .mermaid-viewport svg .messageLine0,
+    .mermaid-viewport svg .messageLine1,
+    .lightbox-card svg .flowchart-link,
+    .lightbox-card svg .edgePath path,
+    .lightbox-card svg path.path,
+    .lightbox-card svg .messageLine0,
+    .lightbox-card svg .messageLine1 {
+      stroke: #334155 !important;
+      stroke-width: 2px !important;
+    }
+
+    [data-theme="dark"] .mermaid-viewport svg .flowchart-link,
+    [data-theme="dark"] .mermaid-viewport svg .edgePath path,
+    [data-theme="dark"] .mermaid-viewport svg path.path,
+    [data-theme="dark"] .mermaid-viewport svg .messageLine0,
+    [data-theme="dark"] .mermaid-viewport svg .messageLine1,
+    [data-theme="dark"] .lightbox-card svg .flowchart-link,
+    [data-theme="dark"] .lightbox-card svg .edgePath path,
+    [data-theme="dark"] .lightbox-card svg path.path,
+    [data-theme="dark"] .lightbox-card svg .messageLine0,
+    [data-theme="dark"] .lightbox-card svg .messageLine1 {
+      stroke: #94a3b8 !important;
+      stroke-width: 2px !important;
+    }
+
+    /* Arrowhead markers (specifically avoiding autonumber sequence markers) */
+    .mermaid-viewport svg marker:not([id*="sequence"]) path,
+    .mermaid-viewport svg marker:not([id*="sequence"]) polygon,
+    .lightbox-card svg marker:not([id*="sequence"]) path,
+    .lightbox-card svg marker:not([id*="sequence"]) polygon {
+      fill: #334155 !important;
+      stroke: #334155 !important;
+    }
+
+    [data-theme="dark"] .mermaid-viewport svg marker:not([id*="sequence"]) path,
+    [data-theme="dark"] .mermaid-viewport svg marker:not([id*="sequence"]) polygon,
+    [data-theme="dark"] .lightbox-card svg marker:not([id*="sequence"]) path,
+    [data-theme="dark"] .lightbox-card svg marker:not([id*="sequence"]) polygon {
+      fill: #94a3b8 !important;
+      stroke: #94a3b8 !important;
+    }
+
+    /* Ensure Mermaid marker arrows and line strokes are sharp and visible in lightbox */
+    .lightbox-card svg .edgePath .path,
+    .lightbox-card svg .flowchart-link,
+    .lightbox-card svg .messageLine0,
+    .lightbox-card svg .messageLine1 {
+      stroke-width: 2px !important;
+    }
+
+    .lightbox-card svg marker path,
+    .lightbox-card svg marker polygon {
+      opacity: 1 !important;
+    }
+
+    @keyframes lightboxFade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }

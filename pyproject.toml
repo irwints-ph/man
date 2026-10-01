@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "man"
-version = "0.1.0"
-description = "Universal Manual Reader"
+version = "0.2.0"
+description = "Universal Manual Reader and Markdown Preview Pane"
 requires-python = ">=3.9"
 dependencies = [
     "rich"
@@ -13,6 +13,10 @@ dependencies = [
 
 [project.scripts]
 man = "man.cli:main"
+mdp = "mdp.main:main"
 
 [tool.setuptools]
-packages = ["man"]
+packages = ["man", "mdp", "mdp.web"]
+
+[tool.setuptools.package-data]
+"mdp.web" = ["*.*", "css/*.*", "js/*.*"]

@@ -13,21 +13,20 @@ def open_in_mdp(source_dir: Path, rel_file: str = "", browser: str = "default"):
     """
     Launches mdp pointing to the topic's source directory and pre-selects the file.
     """
+    local_mdp_main = Path(__file__).resolve().parent.parent / "mdp" / "main.py"
     mdp_cmd = shutil.which("mdp")
     cmd = []
-    if mdp_cmd:
-        cmd = [mdp_cmd, str(source_dir)]
+    if local_mdp_main.exists():
+        cmd = [sys.executable, str(local_mdp_main), "-d", str(source_dir)]
+    elif mdp_cmd:
+        cmd = [mdp_cmd, "-d", str(source_dir)]
     else:
         fallback_batch = Path(r"D:\sw\batch\mdp.cmd")
         if fallback_batch.exists():
-            cmd = [str(fallback_batch), str(source_dir)]
+            cmd = [str(fallback_batch), "-d", str(source_dir)]
         else:
-            fallback_main = Path(r"D:\sw\batch\mdp\main.py")
-            if fallback_main.exists():
-                cmd = [sys.executable, str(fallback_main), str(source_dir)]
-            else:
-                print("Error: 'mdp' (Markdown Preview Pane) launcher not found in PATH or D:\\sw\\batch.")
-                sys.exit(1)
+            print("Error: 'mdp' (Markdown Preview Pane) launcher not found in PATH or D:\\_codes\\man.")
+            sys.exit(1)
 
     if rel_file:
         cmd.extend(["-f", rel_file])
