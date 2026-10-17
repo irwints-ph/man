@@ -65,7 +65,17 @@ mdp -k
 mdp --kill
 mdp -k -p 7800
 
-:: 9. Register mdp manual into man (Universal Manual Reader)
+:: 9. Preview Markdown files from an application registered in code-locations.json
+mdp -a balik
+mdp -a hub
+mdp -a supplier -e
+mdp -a balik -f README.md
+
+:: 10. List all registered applications in code-locations.json
+mdp -la
+mdp --list-apps
+
+:: 11. Register mdp manual into man (Universal Manual Reader)
 mdp -ah
 mdp --add-help
 ```
@@ -75,6 +85,8 @@ mdp --add-help
 | Parameter | Alias | Default | Description |
 |---|---|---|---|
 | `directory` | Positional | `None` | Directory to scan for `.md` files (default: current working directory). |
+| `--app` | `-a` | `None` | Target application or alias from `code-locations.json` (e.g. `mdp -a balik`, `mdp -a hub`). |
+| `--list-apps` | `-la` | Flag | List all applications, aliases, and paths registered in `code-locations.json`. |
 | `--dir`, `--directory`, `--start-dir` | `-d` | `None` | Explicit start directory to scan for `.md` files (overrides positional). |
 | `--file` | `-f` | `""` | Initial markdown file (relative path or filename) to open/preview on startup. |
 | `--expand` | `-e` | `false` | Expand all folders in the explorer tree by default (default: collapsed). |

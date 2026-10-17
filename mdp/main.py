@@ -6,6 +6,8 @@ initializes the HTTP server, and launches the browser UI.
 """
 
 import argparse
+import json
+import os
 import socketserver
 import sys
 import threading
@@ -108,6 +110,160 @@ def register_to_man(topic_name="mdp", target_file="", target_dir=None):
     print("[ERROR] Could not locate 'man' package or CLI to register topic.")
 
 
+def find_code_locations_file():
+    """
+    Locates code-locations.json using environment variable or standard locations.
+    """
+    env_file = os.environ.get("CODE_LOCATIONS_FILE")
+    if env_file:
+        p = Path(env_file)
+        if p.is_file():
+            return p
+
+    candidates = [
+        Path(r"D:\sw\batch\code-tools\code-locations.json"),
+        Path(r"C:\sw\batch\code-tools\code-locations.json"),
+        Path(__file__).resolve().parent.parent.parent / "sw" / "batch" / "code-tools" / "code-locations.json",
+    ]
+    for c in candidates:
+        if c.is_file():
+            return c
+    return None
+
+
+def load_code_applications(config_path):
+    """
+    Loads and normalizes all application entries and directoryAliases from code-locations.json.
+    """
+    with open(config_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    ws_root = data.get("workspaceRoot") or os.environ.get("WORKSPACE_DIR") or r"D:\_codes\_projects"
+    lookup = {}
+    canonical = []
+
+    # Parse applications
+    apps = data.get("applications", {})
+    for key, app in apps.items():
+        norm_key = key.strip().lower()
+        name = app.get("name", norm_key)
+        desc = app.get("description", name)
+        raw_dir = app.get("directory", "")
+
+        # Check environment variable overrides
+        env_vars = app.get("environmentVariables", {})
+        dir_env = env_vars.get("directory")
+        if dir_env and os.environ.get(dir_env):
+            raw_dir = os.environ[dir_env]
+
+        raw_dir = raw_dir.replace("${workspaceRoot}", ws_root)
+        resolved_path = Path(raw_dir)
+        aliases = [a.strip().lower() for a in app.get("aliases", []) if a.strip()]
+
+        entry = {
+            "key": norm_key,
+            "name": name,
+            "description": desc,
+            "path": resolved_path,
+            "aliases": aliases
+        }
+        canonical.append(entry)
+        lookup[norm_key] = entry
+        for alias in aliases:
+            lookup[alias] = entry
+
+    # Parse directoryAliases
+    dir_aliases = data.get("directoryAliases", {})
+    for da_key, da in dir_aliases.items():
+        norm_key = da_key.strip().lower()
+        name = da.get("name", norm_key)
+        raw_dir = da.get("directory", "").replace("${workspaceRoot}", ws_root)
+        resolved_path = Path(raw_dir)
+        aliases = [a.strip().lower() for a in da.get("aliases", []) if a.strip()]
+
+        entry = {
+            "key": norm_key,
+            "name": name,
+            "description": name,
+            "path": resolved_path,
+            "aliases": aliases
+        }
+        canonical.append(entry)
+        lookup[norm_key] = entry
+        for alias in aliases:
+            lookup[alias] = entry
+
+    return {"lookup": lookup, "canonical": canonical}
+
+
+def list_code_applications():
+    """
+    Displays all available applications and their directory locations.
+    """
+    loc_file = find_code_locations_file()
+    if not loc_file:
+        print("[ERROR] code-locations.json not found.")
+        return
+
+    try:
+        reg = load_code_applications(loc_file)
+    except Exception as e:
+        print(f"[ERROR] Failed to read code-locations.json: {e}")
+        return
+
+    print("=" * 65)
+    print("  Available Application Targets (code-locations.json)")
+    print("=" * 65)
+    for entry in reg["canonical"]:
+        alias_str = f" ({', '.join(entry['aliases'])})" if entry["aliases"] else ""
+        exists_str = "" if entry["path"].exists() else " [NOT FOUND]"
+        header = f"  - {entry['key']}{alias_str}"
+        print(f"{header:<32} {entry['description']}{exists_str}")
+        print(f"    Path: {entry['path']}")
+    print("=" * 65)
+    print("  Usage: mdp -a <name> [options]\n")
+
+
+def resolve_application_directory(app_query):
+    """
+    Resolves an application name or alias to its absolute directory Path.
+    """
+    q = app_query.strip().lower()
+    if q in ("?", "help", "list", "all"):
+        list_code_applications()
+        sys.exit(0)
+
+    config_path = find_code_locations_file()
+    if not config_path:
+        print("[ERROR] code-locations.json not found.")
+        return None
+
+    try:
+        reg = load_code_applications(config_path)
+    except Exception as e:
+        print(f"[ERROR] Failed to load code-locations.json: {e}")
+        return None
+
+    if q not in reg["lookup"]:
+        print(f"\n[ERROR] Application '{app_query}' not found in code-locations.json.")
+        print("\nAvailable applications:")
+        for entry in reg["canonical"]:
+            aliases_txt = f" ({', '.join(entry['aliases'])})" if entry["aliases"] else ""
+            print(f"  - {entry['key']}{aliases_txt}")
+        print("\nRun 'mdp -la' to see full application details.\n")
+        return None
+
+    entry = reg["lookup"][q]
+    target_dir = entry["path"]
+    if not target_dir.exists():
+        print(f"\n[ERROR] Target directory for application '{app_query}' does not exist on disk:")
+        print(f"       {target_dir}\n")
+        return None
+
+    print(f"[*] Target Application: {entry['name']} ({entry['key']}) -> {target_dir}")
+    return target_dir
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Markdown Preview Pane: Fast local two-pane Markdown browser."
@@ -117,6 +273,18 @@ def main():
         nargs="?",
         default=None,
         help="Directory to scan for .md files (default: . = directory where executed)."
+    )
+    parser.add_argument(
+        "-a", "--app",
+        type=str,
+        default=None,
+        metavar="APP",
+        help="Target application from code-locations.json (e.g., -a balik, -a hub, -a supplier)."
+    )
+    parser.add_argument(
+        "-la", "--list-apps",
+        action="store_true",
+        help="List all available applications registered in code-locations.json."
     )
     parser.add_argument(
         "-d", "--dir", "--directory", "--start-dir",
@@ -199,8 +367,34 @@ def main():
         kill_instances(target_port=args.port)
         return
 
-    # Resolve target directory (prioritizes explicit -d/--start-dir over positional directory)
-    raw_dir_input = args.start_dir if args.start_dir else (args.directory or ".")
+    # Handle list-apps flag (-la)
+    if args.list_apps:
+        list_code_applications()
+        return
+
+    # Resolve target directory from application flag (-a / --app)
+    app_target_dir = None
+    if args.app:
+        app_target_dir = resolve_application_directory(args.app)
+        if not app_target_dir:
+            sys.exit(1)
+
+    # Resolve target directory (prioritizes explicit -d/--start-dir, then -a, then positional directory)
+    if args.start_dir:
+        raw_dir_input = args.start_dir
+    elif app_target_dir:
+        if args.directory:
+            candidate = app_target_dir / args.directory
+            if candidate.exists():
+                raw_dir_input = str(candidate)
+            else:
+                raw_dir_input = str(app_target_dir)
+        else:
+            raw_dir_input = str(app_target_dir)
+    elif args.directory:
+        raw_dir_input = args.directory
+    else:
+        raw_dir_input = "."
     dir_str = raw_dir_input.strip(' "\'')
     if dir_str.endswith('\\"') or dir_str.endswith('"'):
         dir_str = dir_str[:-1].rstrip('\\')
