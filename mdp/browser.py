@@ -17,7 +17,7 @@ def open_browser(url: str, browser_name: str = "default"):
     if target in ("edge", "msedge", "e"):
         if sys.platform == "win32":
             try:
-                os.system(f'start msedge "{url}"')
+                os.system(f'start msedge --start-maximized "{url}"')
                 return
             except Exception:
                 pass
@@ -38,12 +38,12 @@ def open_browser(url: str, browser_name: str = "default"):
             for candidate in chrome_candidates:
                 if os.path.isfile(candidate):
                     try:
-                        os.system(f'start "" "{candidate}" "{url}"')
+                        os.system(f'start "" "{candidate}" --start-maximized "{url}"')
                         return
                     except Exception:
                         pass
             try:
-                os.system(f'start chrome "{url}"')
+                os.system(f'start chrome --start-maximized "{url}"')
                 return
             except Exception:
                 pass
@@ -56,7 +56,7 @@ def open_browser(url: str, browser_name: str = "default"):
     elif target in ("brave", "b"):
         if sys.platform == "win32":
             try:
-                os.system(f'start brave "{url}"')
+                os.system(f'start brave --start-maximized "{url}"')
                 return
             except Exception:
                 pass

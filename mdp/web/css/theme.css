@@ -10,7 +10,8 @@
       --active-item: #e0e7ff;
       --active-text: #1e40af;
       --folder-hover: rgba(0, 0, 0, 0.04);
-      --sidebar-width: 320px;
+      --sidebar-width: 280px;
+      --content-max-width: 1450px;
       --lightbox-bg: rgba(15, 23, 42, 0.85);
     }
 
@@ -102,6 +103,32 @@
     .btn-sm {
       padding: 0.2rem 0.45rem;
       font-size: 0.75rem;
+    }
+
+    .btn-group {
+      display: inline-flex;
+      align-items: center;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .btn-group .btn {
+      border: none;
+      border-radius: 0;
+      padding: 0.25rem 0.55rem;
+      font-size: 0.775rem;
+      border-right: 1px solid var(--border-color);
+    }
+
+    .btn-group .btn:last-child {
+      border-right: none;
+    }
+
+    .btn-group .btn.active {
+      background: var(--accent);
+      color: #ffffff;
     }
 
     /* Document Font Size Zoom Controls */

@@ -26,15 +26,22 @@ if sys.version_info < (3, 8):
     print(f"[ERROR] mdp requires Python 3.8 or higher. (Detected: {sys.version})")
     sys.exit(1)
 
+if sys.stdout is None:
+    sys.stdout = open(os.devnull, "w")
+if sys.stderr is None:
+    sys.stderr = open(os.devnull, "w")
+
 if __package__ is None or __package__ == "":
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-    from mdp.process import DEFAULT_PORT, find_free_port, check_status, kill_instances
+    from mdp.process import DEFAULT_PORT, find_free_port, find_running_instances, check_status, kill_instances
     from mdp.browser import open_browser
     from mdp.server import MarkdownPreviewHandler, start_watchdog
+    from mdp.registry import register_context_menu, remove_context_menu, find_pythonw_launcher
 else:
-    from .process import DEFAULT_PORT, find_free_port, check_status, kill_instances
+    from .process import DEFAULT_PORT, find_free_port, find_running_instances, check_status, kill_instances
     from .browser import open_browser
     from .server import MarkdownPreviewHandler, start_watchdog
+    from .registry import register_context_menu, remove_context_menu, find_pythonw_launcher
 
 
 def register_to_man(topic_name="mdp", target_file="", target_dir=None):
@@ -266,13 +273,13 @@ def resolve_application_directory(app_query):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Markdown Preview Pane: Fast local two-pane Markdown browser."
+        description="Markdown & Code Preview Pane: Fast local two-pane browser for Markdown, SQL, and code files."
     )
     parser.add_argument(
         "directory",
         nargs="?",
         default=None,
-        help="Directory to scan for .md files (default: . = directory where executed)."
+        help="Directory to scan for .md, .sql, and code files (default: . = directory where executed)."
     )
     parser.add_argument(
         "-a", "--app",
@@ -291,7 +298,14 @@ def main():
         dest="start_dir",
         type=str,
         default=None,
-        help="Explicit start directory to scan for .md files (overrides positional directory)."
+        help="Explicit start directory to scan for files (overrides positional directory)."
+    )
+    parser.add_argument(
+        "-ext", "--extensions",
+        type=str,
+        default="",
+        metavar="EXTS",
+        help="Comma-separated file extensions to include (e.g. .md,.sql or sql,md). Defaults to all supported preview formats."
     )
     parser.add_argument(
         "-s", "--status",
@@ -345,8 +359,41 @@ def main():
         metavar="TOPIC",
         help="Automatically register mdp's manual (or specified topic) into man (equivalent to: man -a mdp <doc-path>)."
     )
+    parser.add_argument(
+        "-bg", "--background",
+        action="store_true",
+        help="Run mdp in the background without a cmd/console window."
+    )
+    parser.add_argument(
+        "-ro", "--register-open",
+        action="store_true",
+        help="Register 'Open with MDP' in Windows Explorer right-click context menu for folders."
+    )
+    parser.add_argument(
+        "-rro", "--remove-register-open",
+        action="store_true",
+        help="Remove 'Open with MDP' from Windows Explorer right-click context menu."
+    )
 
     args = parser.parse_args()
+
+    # Handle background detachment flag (-bg)
+    if args.background and sys.platform == "win32" and "pythonw" not in sys.executable.lower():
+        pythonw_cmd = find_pythonw_launcher()
+        clean_argv = [a for a in sys.argv[1:] if a not in ("-bg", "--background")]
+        cmd = [pythonw_cmd, str(Path(__file__).resolve())] + clean_argv
+        import subprocess
+        subprocess.Popen(cmd, creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP)
+        return
+
+    # Handle Windows context menu registration flags (-ro / -rro)
+    if args.register_open:
+        register_context_menu()
+        return
+
+    if args.remove_register_open:
+        remove_context_menu()
+        return
 
     # Handle add-help flag (-ah)
     if args.add_help is not None:
@@ -415,13 +462,71 @@ def main():
             initial_file = target_path.name
         target_path = target_path.parent
 
-    port = args.port if args.port > 0 else find_free_port(DEFAULT_PORT)
+    # Check if an active mdp instance is already serving this exact directory
+    if not args.port:
+        try:
+            running = find_running_instances(DEFAULT_PORT)
+            for inst in running:
+                inst_dir = Path(inst.get("target_dir", "")).resolve()
+                if inst_dir == target_path:
+                    inst_port = inst["port"]
+                    inst_url = f"http://localhost:{inst_port}"
+                    qparts = []
+                    if initial_file:
+                        qparts.append(f"file={urllib.parse.quote(initial_file.replace('\\', '/'))}")
+                    if args.expand:
+                        qparts.append("expand=1")
+                    if qparts:
+                        inst_url += "?" + "&".join(qparts)
+                    print("=" * 60)
+                    print("  [MDP] Found active instance already serving this directory!")
+                    print(f"  Target Directory : {target_path}")
+                    print(f"  Local Address    : {inst_url}")
+                    print(f"  Browser Target   : {args.browser}")
+                    print("=" * 60)
+                    if not args.no_browser:
+                        open_browser(inst_url, browser_name=args.browser)
+                    return
+        except Exception:
+            pass
+
+    if args.extensions:
+        exts = {e.strip().lower() if e.strip().startswith(".") else f".{e.strip().lower()}"
+                for e in args.extensions.split(",") if e.strip()}
+        MarkdownPreviewHandler.allowed_extensions = exts
+    else:
+        MarkdownPreviewHandler.allowed_extensions = None
 
     MarkdownPreviewHandler.target_dir = target_path
     MarkdownPreviewHandler.start_time = time.time()
     MarkdownPreviewHandler.default_expand = args.expand
 
-    server = socketserver.TCPServer(("127.0.0.1", port), MarkdownPreviewHandler)
+    # Enable SO_REUSEADDR and auto-hunt for available port
+    socketserver.TCPServer.allow_reuse_address = True
+    server = None
+    target_start_port = args.port if args.port > 0 else find_free_port(DEFAULT_PORT)
+    max_retries = 1 if args.port > 0 else 50
+
+    for offset in range(max_retries):
+        candidate_port = target_start_port + offset
+        try:
+            server = socketserver.TCPServer(("127.0.0.1", candidate_port), MarkdownPreviewHandler)
+            port = candidate_port
+            break
+        except OSError as err:
+            if args.port > 0:
+                print(f"[ERROR] Could not bind to requested port {args.port}: {err}")
+                sys.exit(1)
+            continue
+
+    if server is None:
+        try:
+            server = socketserver.TCPServer(("127.0.0.1", 0), MarkdownPreviewHandler)
+            port = server.server_address[1]
+        except Exception as err:
+            print(f"[ERROR] Failed to bind server to any available port: {err}")
+            sys.exit(1)
+
     MarkdownPreviewHandler.server_instance = server
     MarkdownPreviewHandler.keep_alive = args.keep_alive
     MarkdownPreviewHandler.last_heartbeat = time.time()

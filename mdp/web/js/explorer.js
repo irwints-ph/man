@@ -5,6 +5,47 @@
       renderExplorerTree(query);
     });
 
+    function getFileIcon(fileName) {
+      const ext = fileName.includes('.') ? fileName.split('.').pop().toLowerCase() : '';
+      switch (ext) {
+        case 'sql':
+          return '🗄️';
+        case 'md':
+        case 'markdown':
+          return '📄';
+        case 'py':
+          return '🐍';
+        case 'json':
+          return '📋';
+        case 'txt':
+        case 'log':
+          return '📃';
+        case 'sh':
+        case 'bat':
+        case 'cmd':
+        case 'ps1':
+        case 'psm1':
+        case 'psd1':
+          return '⚡';
+        case 'js':
+        case 'ts':
+          return '📜';
+        case 'html':
+        case 'htm':
+          return '🌐';
+        case 'css':
+          return '🎨';
+        case 'yaml':
+        case 'yml':
+          return '⚙️';
+        case 'csv':
+        case 'tsv':
+          return '📊';
+        default:
+          return '📄';
+      }
+    }
+
     // Build Hierarchical Tree from flat paths
     function buildTree(files) {
       const root = { name: '', type: 'folder', path: '', children: {} };
@@ -129,9 +170,19 @@
               return;
             }
 
-            const fileRow = document.createElement('div');
+            const fileExt = item.name.includes('.') ? item.name.split('.').pop().toLowerCase() : '';
+            const isHtml = fileExt === 'html' || fileExt === 'htm';
+            const rawUrl = '/raw/' + encodeURI(item.path);
+
+            const fileRow = document.createElement('a');
             fileRow.className = 'tree-row file-row' + (currentFile === item.path ? ' active' : '');
+            fileRow.href = isHtml ? rawUrl : ('/?file=' + encodeURIComponent(item.path));
+            fileRow.target = '_blank';
+            fileRow.title = item.path + (isHtml ? ' (Click to preview, right-click to open in new tab)' : '');
+
             fileRow.onclick = (e) => {
+              if (e.ctrlKey || e.metaKey || e.button === 1) return; // Allow browser to handle new tab clicks
+              e.preventDefault();
               e.stopPropagation();
               openFile(item.path);
               if (window.innerWidth < 768) sidebar.classList.remove('open');
@@ -144,7 +195,7 @@
 
             const icon = document.createElement('span');
             icon.className = 'tree-icon';
-            icon.textContent = '📄';
+            icon.textContent = getFileIcon(item.name);
 
             const label = document.createElement('span');
             label.className = 'tree-label';
@@ -159,6 +210,20 @@
             fileRow.appendChild(icon);
             fileRow.appendChild(label);
             fileRow.appendChild(size);
+
+            if (isHtml) {
+              const openExtBtn = document.createElement('span');
+              openExtBtn.className = 'tree-row-action';
+              openExtBtn.textContent = '↗';
+              openExtBtn.title = 'Open HTML in another tab';
+              openExtBtn.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.open(rawUrl, '_blank');
+              };
+              fileRow.appendChild(openExtBtn);
+            }
+
             fragment.appendChild(fileRow);
           }
         });

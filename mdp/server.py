@@ -22,6 +22,22 @@ else:
     from .template import HTML_TEMPLATE, get_html_template
 
 
+DEFAULT_EXTENSIONS = {
+    ".md", ".markdown",
+    ".sql",
+    ".py",
+    ".json",
+    ".txt",
+    ".csv",
+    ".tsv",
+    ".yaml", ".yml",
+    ".sh", ".bat", ".cmd",
+    ".ps1", ".psm1", ".psd1",
+    ".js", ".ts",
+    ".html", ".htm", ".css",
+}
+
+
 class MarkdownPreviewHandler(http.server.BaseHTTPRequestHandler):
     target_dir: Path = Path.cwd()
     server_instance = None
@@ -32,6 +48,7 @@ class MarkdownPreviewHandler(http.server.BaseHTTPRequestHandler):
     keep_alive: bool = False
     start_time: float = 0.0
     default_expand: bool = False
+    allowed_extensions = None
 
     @classmethod
     def record_heartbeat(cls):
@@ -85,7 +102,7 @@ class MarkdownPreviewHandler(http.server.BaseHTTPRequestHandler):
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
 
-        if path == "/" or path == "/index.html":
+        if path == "/":
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.end_headers()
@@ -95,6 +112,20 @@ class MarkdownPreviewHandler(http.server.BaseHTTPRequestHandler):
                 html_bytes = HTML_TEMPLATE.encode("utf-8")
             self.wfile.write(html_bytes)
             return
+
+        if path == "/index.html":
+            # If project has its own index.html, fall through to static handler
+            user_index = self.target_dir / "index.html"
+            if not user_index.is_file():
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.end_headers()
+                try:
+                    html_bytes = get_html_template().encode("utf-8")
+                except Exception:
+                    html_bytes = HTML_TEMPLATE.encode("utf-8")
+                self.wfile.write(html_bytes)
+                return
 
         if path == "/api/status":
             info = {
@@ -128,15 +159,18 @@ class MarkdownPreviewHandler(http.server.BaseHTTPRequestHandler):
             return
 
         if path == "/api/files":
+            valid_exts = self.allowed_extensions if self.allowed_extensions is not None else DEFAULT_EXTENSIONS
             files = []
             for root, _, filenames in os.walk(self.target_dir):
-                # Ignore hidden directories like .git, node_modules, .venv
+                # Ignore hidden directories like .git, node_modules, .venv, etc.
                 parts = Path(root).parts
-                if any(p.startswith(".") or p in ("node_modules", "dist", "build", "__pycache__") for p in parts):
+                if any(p.startswith(".") or p in ("node_modules", "dist", "build", "__pycache__", ".venv", "venv", ".gradle") for p in parts):
                     continue
 
                 for fn in filenames:
-                    if fn.lower().endswith(".md"):
+                    p = Path(fn)
+                    ext = p.suffix.lower()
+                    if ext in valid_exts:
                         full_p = Path(root) / fn
                         try:
                             rel = full_p.relative_to(self.target_dir).as_posix()
@@ -144,7 +178,8 @@ class MarkdownPreviewHandler(http.server.BaseHTTPRequestHandler):
                             files.append({
                                 "name": fn,
                                 "path": rel,
-                                "size": size
+                                "size": size,
+                                "ext": ext.lstrip(".")
                             })
                         except Exception:
                             continue
@@ -183,14 +218,61 @@ class MarkdownPreviewHandler(http.server.BaseHTTPRequestHandler):
                     return
 
                 content = safe_path.read_text(encoding="utf-8", errors="replace")
+                ext = safe_path.suffix.lower()
+                content_type = "text/plain; charset=utf-8"
+                if ext in (".md", ".markdown"):
+                    content_type = "text/markdown; charset=utf-8"
+                elif ext == ".sql":
+                    content_type = "text/x-sql; charset=utf-8"
+                elif ext == ".json":
+                    content_type = "application/json; charset=utf-8"
+                elif ext == ".py":
+                    content_type = "text/x-python; charset=utf-8"
+                elif ext in (".ps1", ".psm1", ".psd1"):
+                    content_type = "text/plain; charset=utf-8"
+                elif ext in (".html", ".htm"):
+                    content_type = "text/html; charset=utf-8"
+
                 self.send_response(200)
-                self.send_header("Content-Type", "text/markdown; charset=utf-8")
+                self.send_header("Content-Type", content_type)
                 self.send_header("Cache-Control", "no-cache")
                 self.end_headers()
                 self.wfile.write(content.encode("utf-8"))
                 return
             except Exception as e:
                 self.send_error(500, f"Error reading file: {e}")
+                return
+
+        # Direct /raw/<path> route for raw file serving and rendered HTML/assets
+        if path.startswith("/raw/"):
+            rel_file = urllib.parse.unquote(path[5:])
+            try:
+                safe_path = (self.target_dir / rel_file).resolve()
+                if not str(safe_path).startswith(str(self.target_dir.resolve())):
+                    self.send_error(403, "Access denied")
+                    return
+
+                if not safe_path.is_file():
+                    self.send_error(404, "File not found")
+                    return
+
+                mime_type, _ = mimetypes.guess_type(str(safe_path))
+                if safe_path.suffix.lower() in (".html", ".htm"):
+                    mime_type = "text/html; charset=utf-8"
+                mime_type = mime_type or "application/octet-stream"
+
+                self.send_response(200)
+                self.send_header("Content-Type", mime_type)
+                self.send_header("Content-Length", str(safe_path.stat().st_size))
+                self.send_header("Cache-Control", "no-cache")
+                self.end_headers()
+
+                with open(safe_path, "rb") as f:
+                    while chunk := f.read(65536):
+                        self.wfile.write(chunk)
+                return
+            except Exception as e:
+                self.send_error(500, f"Error serving raw file: {e}")
                 return
 
         if path == "/api/raw":

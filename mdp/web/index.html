@@ -20,10 +20,11 @@
   <header class="app-header">
     <div class="app-brand">
       <button id="btn-toggle-sidebar" class="btn" title="Toggle File Tree">📁 Explorer</button>
-      <span>Markdown Preview Pane</span>
+      <span>Markdown & Code Preview</span>
       <span class="badge" id="root-dir-badge">_docs</span>
     </div>
     <div class="header-actions">
+      <button id="btn-width" class="btn" title="Toggle Reading Width (Wide / Full / Normal)">⛶ Wide</button>
       <button id="btn-toc" class="btn" title="Table of Contents">📑 Outline</button>
       <button id="btn-theme" class="btn" title="Toggle Theme">🌓 Theme</button>
     </div>
@@ -52,22 +53,29 @@
     <!-- Right Pane: Markdown Content Viewer -->
     <main class="preview-pane">
       <div class="preview-toolbar">
-        <span class="preview-path" id="preview-path">Select a markdown file to preview</span>
+        <span class="preview-path" id="preview-path">Select a document or SQL file to preview</span>
         <div style="display:flex; gap:0.5rem; align-items:center;">
+          <!-- HTML Mode Toggle (Rendered vs Source) -->
+          <div id="html-view-toggle" class="btn-group" style="display:none;">
+            <button type="button" id="btn-html-render" class="btn btn-sm active" title="View rendered HTML page" onclick="setHtmlViewMode('rendered')">🌐 Preview</button>
+            <button type="button" id="btn-html-source" class="btn btn-sm" title="View HTML source code" onclick="setHtmlViewMode('source')">📝 Source</button>
+          </div>
+          <!-- Open in New Tab Button -->
+          <button id="btn-open-tab" class="btn btn-sm" title="Open in another browser tab" style="display:none;" onclick="openCurrentInNewTab()">↗ Open Tab</button>
           <!-- Markdown Document Font Size Zoom Controls -->
-          <div class="zoom-toolbar-group" title="Document Font Size Zoom (Ctrl + Plus / Minus)">
+          <div class="zoom-toolbar-group" id="zoom-controls" title="Document Font Size Zoom (Ctrl + Plus / Minus)">
             <button type="button" class="btn-icon" onclick="adjustDocZoom(-0.1)" title="Smaller text (Ctrl + -)">A−</button>
             <span id="doc-zoom-label" class="zoom-badge" onclick="resetDocZoom()" title="Click to reset font size (100%)">100%</span>
             <button type="button" class="btn-icon" onclick="adjustDocZoom(0.1)" title="Larger text (Ctrl + +)">A+</button>
           </div>
-          <button id="btn-copy" class="btn" title="Copy raw Markdown" style="display:none;" onclick="copyRawContent()">📋 Copy</button>
+          <button id="btn-copy" class="btn" title="Copy raw content" style="display:none;" onclick="copyRawContent()">📋 Copy</button>
         </div>
       </div>
       <div class="preview-content" id="scroll-container">
         <article class="markdown-body" id="markdown-viewer">
           <div style="text-align:center; padding: 4rem 1rem; color:var(--text-secondary);">
-            <h2>📖 Markdown Preview Pane</h2>
-            <p style="margin-top:0.5rem;">Select any Markdown file from the left Explorer to view its formatted output.</p>
+            <h2>📖 Markdown & Code Preview</h2>
+            <p style="margin-top:0.5rem;">Select any Markdown or SQL/Code file from the left Explorer to view its formatted output.</p>
           </div>
         </article>
       </div>

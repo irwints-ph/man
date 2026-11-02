@@ -22,15 +22,36 @@ if sys.platform == "win32":
 DEFAULT_PORT = 7800
 
 
-def find_free_port(start_port=DEFAULT_PORT):
-    """Finds an available TCP port starting from start_port."""
-    port = start_port
-    while port < start_port + 100:
+def is_port_available(port: int, host: str = "127.0.0.1") -> bool:
+    """Verifies that a port is truly available to bind and listen on."""
+    try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            if s.connect_ex(("127.0.0.1", port)) != 0:
-                return port
-        port += 1
-    return start_port
+            s.settimeout(0.05)
+            if s.connect_ex((host, port)) == 0:
+                return False
+    except Exception:
+        pass
+
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            s.bind((host, port))
+            return True
+    except OSError:
+        return False
+
+
+def find_free_port(start_port=DEFAULT_PORT, max_attempts=100, host="127.0.0.1"):
+    """Finds an available TCP port starting from start_port."""
+    for port in range(start_port, start_port + max_attempts):
+        if is_port_available(port, host=host):
+            return port
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.bind((host, 0))
+            return s.getsockname()[1]
+    except Exception:
+        return start_port
 
 
 def find_running_instances(start_port=DEFAULT_PORT, max_ports=50):
